@@ -1,0 +1,6 @@
+# picodet-onnxruntime
+使用ONNXRuntime部署PicoDet目标检测，包含C++和Python两个版本的程序
+
+起初我打算用opencv部署PicoDet目标检测，但是程序读取onnx文件失败了。
+于是我用onnxruntime做部署就成功了，不过在PicoDet官方代码仓库里提供了10个.onnx文件，
+我逐个运行之后，发现只有4个.onnx文件是onnxruntime库能正常读取的
