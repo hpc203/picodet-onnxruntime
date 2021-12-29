@@ -104,8 +104,9 @@ class my_nanodet():
         classIds = np.argmax(mlvl_scores, axis=1)
         confidences = np.max(mlvl_scores, axis=1)  ####max_class_confidence
 
-        indices = cv2.dnn.NMSBoxes(bboxes_wh.tolist(), confidences.tolist(), self.prob_threshold, self.iou_threshold).flatten()
+        indices = cv2.dnn.NMSBoxes(bboxes_wh.tolist(), confidences.tolist(), self.prob_threshold, self.iou_threshold)
         if len(indices)>0:
+            indices=indices.flatten()
             mlvl_bboxes = mlvl_bboxes[indices]
             confidences = confidences[indices]
             classIds = classIds[indices]
