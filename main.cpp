@@ -22,10 +22,10 @@ typedef struct BoxInfo
 	int label;
 } BoxInfo;
 
-class YOLO
+class PicoDet
 {
 public:
-	YOLO(string model_path, string classesFile, float nms_threshold, float objThreshold);
+	PicoDet(string model_path, string classesFile, float nms_threshold, float objThreshold);
 	void detect(Mat& cv_image);
 private:
 	float score_threshold = 0.5;
@@ -57,7 +57,7 @@ private:
 	vector<vector<int64_t>> output_node_dims; // >=1 outputs
 };
 
-YOLO::YOLO(string model_path, string classesFile, float nms_threshold, float objThreshold)
+PicoDet::PicoDet(string model_path, string classesFile, float nms_threshold, float objThreshold)
 {
 	ifstream ifs(classesFile.c_str());
 	string line;
@@ -104,7 +104,7 @@ YOLO::YOLO(string model_path, string classesFile, float nms_threshold, float obj
 	}
 }
 
-Mat YOLO::resize_image(Mat srcimg, int *newh, int *neww, int *top, int *left)
+Mat PicoDet::resize_image(Mat srcimg, int *newh, int *neww, int *top, int *left)
 {
 	int srch = srcimg.rows, srcw = srcimg.cols;
 	*newh = this->inpHeight;
@@ -133,7 +133,7 @@ Mat YOLO::resize_image(Mat srcimg, int *newh, int *neww, int *top, int *left)
 	return dstimg;
 }
 
-void YOLO::normalize_(Mat img)
+void PicoDet::normalize_(Mat img)
 {
 	//    img.convertTo(img, CV_32F);
 	int row = img.rows;
@@ -153,7 +153,7 @@ void YOLO::normalize_(Mat img)
 	}
 }
 
-void YOLO::softmax_(const float* x, float* y, int length)
+void PicoDet::softmax_(const float* x, float* y, int length)
 {
 	float sum = 0;
 	int i = 0;
@@ -168,7 +168,7 @@ void YOLO::softmax_(const float* x, float* y, int length)
 	}
 }
 
-void YOLO::generate_proposal(vector<BoxInfo>& generate_boxes, const int stride_, const float* out_score, const float* out_box)
+void PicoDet::generate_proposal(vector<BoxInfo>& generate_boxes, const int stride_, const float* out_score, const float* out_box)
 {
 	const int num_grid_y = (int)ceil((float)this->inpHeight / stride_);
 	const int num_grid_x = (int)ceil((float)this->inpWidth / stride_);
@@ -219,7 +219,7 @@ void YOLO::generate_proposal(vector<BoxInfo>& generate_boxes, const int stride_,
 	}
 }
 
-void YOLO::nms(vector<BoxInfo>& input_boxes)
+void PicoDet::nms(vector<BoxInfo>& input_boxes)
 {
 	sort(input_boxes.begin(), input_boxes.end(), [](BoxInfo a, BoxInfo b) { return a.score > b.score; });
 	vector<float> vArea(input_boxes.size());
@@ -257,7 +257,7 @@ void YOLO::nms(vector<BoxInfo>& input_boxes)
 	input_boxes.erase(remove_if(input_boxes.begin(), input_boxes.end(), [&idx_t, &isSuppressed](const BoxInfo& f) { return isSuppressed[idx_t++]; }), input_boxes.end());
 }
 
-void YOLO::detect(Mat& srcimg)
+void PicoDet::detect(Mat& srcimg)
 {
 	int newh = 0, neww = 0, top = 0, left = 0;
 	Mat cv_image = srcimg.clone();
@@ -299,7 +299,7 @@ void YOLO::detect(Mat& srcimg)
 
 int main()
 {
-	YOLO mynet("coco/picodet_m_416_coco.onnx", "coco/coco.names", 0.5, 0.5);  /// choice = ["picodet_m_320_coco.onnx", "picodet_m_416_coco.onnx", "picodet_s_320_coco.onnx", "picodet_s_416_coco.onnx"]
+	PicoDet mynet("coco/picodet_m_416_coco.onnx", "coco/coco.names", 0.5, 0.5);  /// choice = ["picodet_m_320_coco.onnx", "picodet_m_416_coco.onnx", "picodet_s_320_coco.onnx", "picodet_s_416_coco.onnx"]
 	string imgpath = "coco/person.jpg";
 	Mat srcimg = imread(imgpath);
 	mynet.detect(srcimg);

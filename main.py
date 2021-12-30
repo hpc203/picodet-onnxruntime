@@ -4,7 +4,7 @@ import argparse
 import onnxruntime as ort
 import math
 
-class my_nanodet():
+class PicoDet():
     def __init__(self, model_pb_path, label_path, prob_threshold=0.4, iou_threshold=0.3):
         self.classes = list(map(lambda x: x.strip(), open(label_path, 'r').readlines()))
         self.num_classes = len(self.classes)
@@ -154,7 +154,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     srcimg = cv2.imread(args.imgpath)
-    net = my_nanodet(args.modelpath, args.classfile, prob_threshold=args.confThreshold, iou_threshold=args.nmsThreshold)
+    net = PicoDet(args.modelpath, args.classfile, prob_threshold=args.confThreshold, iou_threshold=args.nmsThreshold)
     srcimg = net.detect(srcimg)
 
     winName = 'Deep learning object detection in onnxruntime'
